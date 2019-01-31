@@ -55,15 +55,16 @@ public class ListaPokemonsActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(Utils.existeConexaoInternet(ListaPokemonsActivity.this, swipeRefreshLayout))
-                    montarListaPokemons();
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            if(Utils.existeConexaoInternet(ListaPokemonsActivity.this))
+                montarListaPokemons();
+            else
+                swipeRefreshLayout.setRefreshing(false);
         });
-        if(Utils.existeConexaoInternet(ListaPokemonsActivity.this, swipeRefreshLayout))
+        if(Utils.existeConexaoInternet(ListaPokemonsActivity.this))
             montarListaPokemons();
+        else
+            swipeRefreshLayout.setRefreshing(false);
     }
 
     private void montarListaPokemons() {
@@ -89,6 +90,12 @@ public class ListaPokemonsActivity extends AppCompatActivity {
 
                 swipeRefreshLayout.setRefreshing(false);
             }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Dialogs.mostrarDialogErro(R.string.erro_rest, ListaPokemonsActivity.this);
+            }
         });
     }
 
@@ -105,8 +112,10 @@ public class ListaPokemonsActivity extends AppCompatActivity {
 
             case R.id.menu_refresh:
                 swipeRefreshLayout.setRefreshing(true);
-                if(Utils.existeConexaoInternet(ListaPokemonsActivity.this, swipeRefreshLayout))
+                if(Utils.existeConexaoInternet(ListaPokemonsActivity.this))
                     montarListaPokemons();
+                else
+                    swipeRefreshLayout.setRefreshing(false);
 
                 return true;
         }

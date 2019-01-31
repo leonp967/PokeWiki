@@ -51,17 +51,18 @@ public class TiposPokemonsActivity extends AppCompatActivity {
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        if(Utils.existeConexaoInternet(TiposPokemonsActivity.this, swipeRefreshLayout))
-                            montarListaTipos();
-                    }
+                () -> {
+                    if(Utils.existeConexaoInternet(TiposPokemonsActivity.this))
+                        montarListaTipos();
+                    else
+                        swipeRefreshLayout.setRefreshing(false);
                 }
         );
         Utils.verificarPermissoes(this);
-        if(Utils.existeConexaoInternet(TiposPokemonsActivity.this, swipeRefreshLayout))
+        if(Utils.existeConexaoInternet(TiposPokemonsActivity.this))
             montarListaTipos();
+        else
+            swipeRefreshLayout.setRefreshing(false);
     }
 
     private void montarListaTipos() {
@@ -81,6 +82,12 @@ public class TiposPokemonsActivity extends AppCompatActivity {
                     ((TiposPokemonAdapter)adapter).addAll(tiposPokemons);
 
                 swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Dialogs.mostrarDialogErro(R.string.erro_rest, TiposPokemonsActivity.this);
             }
         });
     }
@@ -112,8 +119,10 @@ public class TiposPokemonsActivity extends AppCompatActivity {
 
             case R.id.menu_refresh:
                 swipeRefreshLayout.setRefreshing(true);
-                if(Utils.existeConexaoInternet(TiposPokemonsActivity.this, swipeRefreshLayout))
+                if(Utils.existeConexaoInternet(TiposPokemonsActivity.this))
                     montarListaTipos();
+                else
+                    swipeRefreshLayout.setRefreshing(false);
 
                 return true;
         }

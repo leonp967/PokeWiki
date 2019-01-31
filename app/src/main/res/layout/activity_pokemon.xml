@@ -1,22 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.PokemonActivity">
+    tools:context=".views.PokemonActivity"
+    android:background="#fff">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/img_pokemon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:maxWidth="150sp"
-        android:maxHeight="150sp"
+        app:layout_constraintHeight_percent=".30"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintWidth_percent=".40"
+        app:layout_constraintWidth_default="percent"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/pikachu" />
+
+    <TextView
+        android:id="@+id/text_nome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:textColor="#000"
+        app:layout_constraintStart_toEndOf="@+id/img_pokemon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_especie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:textColor="#000"
+        app:layout_constraintStart_toEndOf="@+id/img_pokemon"
+        app:layout_constraintTop_toBottomOf="@+id/text_nome" />
+
+    <TextView
+        android:id="@+id/text_altura"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:textColor="#000"
+        app:layout_constraintStart_toEndOf="@+id/img_pokemon"
+        app:layout_constraintTop_toBottomOf="@+id/text_especie" />
+
+    <TextView
+        android:id="@+id/text_peso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:textColor="#000"
+        app:layout_constraintStart_toEndOf="@+id/img_pokemon"
+        app:layout_constraintTop_toBottomOf="@+id/text_altura" />
+
+    <TextView
+        android:id="@+id/text_experiencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:textColor="#000"
+        app:layout_constraintStart_toEndOf="@+id/img_pokemon"
+        app:layout_constraintTop_toBottomOf="@+id/text_peso" />
+
+    <TextView
+        android:id="@+id/lista_habilidades"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:textColor="#000"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_pokemon" />
+
+    <TextView
+        android:id="@+id/text_movimentos"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="@string/text_movimentos_pokemon"
+        app:layout_constraintTop_toBottomOf="@id/img_pokemon"
+        app:layout_constraintStart_toStartOf="@id/lista_movimentos"
+        app:layout_constraintBottom_toTopOf="@id/lista_movimentos"/>
+
+    <TextView
+        android:id="@+id/lista_movimentos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="32dp"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:scrollbars="vertical"
+        app:layout_constraintHeight_percent=".30"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintWidth_percent=".35"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_movimentos" />
+
+    <TextView
+        android:id="@+id/lista_formas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:textColor="#000"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lista_movimentos" />
+
+    <TextView
+        android:id="@+id/lista_tipos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="20dp"
+        android:textColor="#000"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lista_movimentos"
+        app:layout_constraintTop_toBottomOf="@+id/lista_movimentos" />
 </android.support.constraint.ConstraintLayout>

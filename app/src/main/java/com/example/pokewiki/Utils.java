@@ -8,7 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 
 import com.example.pokewiki.models.Estatistica;
 import com.example.pokewiki.models.Pokemon;
@@ -34,14 +35,13 @@ public class Utils {
 
     private static Gson gson = new Gson();
 
-    public static boolean existeConexaoInternet(Activity tela, SwipeRefreshLayout swipeRefreshLayout) {
+    public static boolean existeConexaoInternet(Activity tela) {
         ConnectivityManager cm = (ConnectivityManager) tela.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConectado = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
         if(!isConectado){
-            swipeRefreshLayout.setRefreshing(false);
             Dialogs.mostrarDialogErro(R.string.erro_internet, tela);
         }
         return isConectado;
@@ -105,6 +105,18 @@ public class Utils {
         return gson.fromJson(json, Pokemon.class);
     }
 
+    public static SpannableStringBuilder getTextoNegritoIntervalo(String texto) {
+        SpannableStringBuilder str = new SpannableStringBuilder(texto);
+        str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, texto.indexOf(":")+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        return str;
+    }
+
+    public static String getListaConcatenada(List<String> lista) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        lista.forEach(att -> stringBuilder.append(att).append("\n"));
+        return stringBuilder.toString();
+    }
+
     private static class PokemonDeserializer implements JsonDeserializer<Pokemon> {
 
         @Override
@@ -117,14 +129,14 @@ public class Utils {
             pokemon.setAltura(jobject.get("height").getAsInt());
             pokemon.setExperienciaBase(jobject.get("base_experience").getAsInt());
             pokemon.setNome(primeiroCharMaiusculo(jobject.get("name").getAsString()));
-            pokemon.setPeso(jobject.get("weight").getAsInt());
+            pokemon.setPeso(jobject.get("weight").getAsInt()/10.f);
             pokemon.setHabilidades(getNomeProfundidade(jobject, "abilities", "ability"));
             pokemon.setFormas(getNomeProfundidade(jobject, "forms", null));
             pokemon.setMovimentos(getNomeProfundidade(jobject, "moves", "move"));
             pokemon.setEspecie(primeiroCharMaiusculo(((JsonObject) jobject.get("species")).get("name").getAsString()));
 
             JsonElement urlElement = ((JsonObject) jobject.get("sprites")).get("front_default");
-            if(urlElement != null && !urlElement.getAsString().equals("null"))
+            if(urlElement != null && !urlElement.isJsonNull() && !urlElement.getAsString().equals("null"))
                 pokemon.setImagemUrl(urlElement.getAsString());
 
             List<Estatistica> estatisticas = new ArrayList<>();

@@ -8,5 +8,18 @@
     <string name="menu_refresh">Atualizar</string>
     <string name="erro_permissoes">Uma ou mais permissões não foram concedidas. Conceda nas opções do aparelho ou reinicie a aplicação.</string>
     <string name="erro_nenhum_pokemon">Nenhum Pokémon deste tipo foi encontrado</string>
-    <string name="title_activity_pokemon">Detalhes do Pokémon %s</string>
+    <string name="title_activity_pokemon">Detalhes do Pokémon</string>
+    <string name="text_nome_pokemon">Nome: %s</string>
+    <string name="text_altura_pokemon">Altura: %d cm</string>
+    <string name="text_peso_pokemon">Peso: %.1f kg</string>
+    <string name="text_especie_pokemon">Espécie: %s</string>
+    <string name="text_experiencia_pokemon">Experiência base: %d</string>
+    <string name="text_habilidades_pokemon">Habilidades:\n%s</string>
+    <string name="text_movimentos_pokemon">Movimentos:</string>
+    <string name="text_formas_pokemon">Formas:\n%s</string>
+    <string name="text_tipos_pokemon">Tipos:\n%s</string>
+    <string name="erro_rest">Ocorreu um erro ao carregar os dados. Por favor tente novamente.</string>
+    <string name="menu_share">Compartilhar</string>
+    <string name="text_share">Compartilhar dados do Pokémon</string>
+    <string name="text_resumo_pokemon">Capturei um %s no app %s! Ele pesa %.1f kg, mede %d cm de altura, e uma de suas habilidades é a %s!</string>
 </resources>

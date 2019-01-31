@@ -1,5 +1,9 @@
 package com.example.pokewiki.models;
 
+import android.app.Activity;
+
+import com.example.pokewiki.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +19,7 @@ public class Pokemon {
     private String imagemUrl;
     private List<Estatistica> estatisticas = new ArrayList<>();
     private List<String> tipos = new ArrayList<>();
-    private Integer peso;
+    private Float peso;
 
     public List<String> getHabilidades() {
         return habilidades;
@@ -97,11 +101,15 @@ public class Pokemon {
         this.tipos = tipos;
     }
 
-    public Integer getPeso() {
+    public Float getPeso() {
         return peso;
     }
 
-    public void setPeso(Integer peso) {
+    public void setPeso(Float peso) {
         this.peso = peso;
+    }
+
+    public String getResumo(Activity tela){
+        return tela.getString(R.string.text_resumo_pokemon, nome, tela.getString(R.string.app_name), peso, altura, habilidades.get(0));
     }
 }

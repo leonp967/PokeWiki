@@ -5,4 +5,9 @@
         android:title="@string/menu_refresh"
         android:icon="@drawable/baseline_refresh_black_48"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/menu_share"
+        android:icon="@drawable/baseline_share_black_48"
+        app:showAsAction="ifRoom" />
 </menu>
