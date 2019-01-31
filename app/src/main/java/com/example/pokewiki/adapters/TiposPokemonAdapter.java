@@ -4,15 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.pokewiki.ListaPokemonsActivity;
 import com.example.pokewiki.R;
+import com.example.pokewiki.Utils;
 import com.example.pokewiki.models.TipoPokemon;
+import com.example.pokewiki.views.ListaPokemonsActivity;
 
 import java.util.List;
 
@@ -52,8 +54,19 @@ public class TiposPokemonAdapter extends RecyclerView.Adapter<TiposPokemonAdapte
         final int idImagem = resources.getIdentifier(tipo.getNome(), "drawable" ,
                 context.getPackageName());
         holder.imagem.setImageResource(idImagem);
+
+        if(tipo.getNome().equals("unknown") || tipo.getNome().equals("shadow")) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.imagem.getLayoutParams();
+            int margemPx = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    5,
+                    resources.getDisplayMetrics()
+            );
+            params.setMargins(margemPx, margemPx, 0, margemPx);
+            holder.imagem.setLayoutParams(params);
+        }
         String nome = tipo.getNome();
-        nome = nome.substring(0,1).toUpperCase() + nome.substring(1);
+        nome = Utils.primeiroCharMaiusculo(nome);
         holder.nome.setText(nome);
     }
 
@@ -62,10 +75,20 @@ public class TiposPokemonAdapter extends RecyclerView.Adapter<TiposPokemonAdapte
         return tiposPokemons.size();
     }
 
+    public void clear() {
+        tiposPokemons.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<TipoPokemon> list) {
+        tiposPokemons.addAll(list);
+        notifyDataSetChanged();
+    }
+
     private class TipoPokemonListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            RecyclerView recyclerView = context.findViewById(R.id.lista_tipos);
+            RecyclerView recyclerView = context.findViewById(R.id.lista);
             int itemPosition = recyclerView.getChildLayoutPosition(view);
             TipoPokemon tipo = tiposPokemons.get(itemPosition);
             Intent intent = new Intent(context, ListaPokemonsActivity.class);

@@ -14,11 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".views.PokemonActivity"></activity>
         <activity
-            android:name=".ListaPokemonsActivity"
+            android:name=".views.ListaPokemonsActivity"
             android:label="@string/title_activity_lista_pokemons"
-            android:theme="@style/AppTheme"/>
-        <activity android:name=".TiposPokemonsActivity">
+            android:theme="@style/AppTheme" />
+        <activity android:name=".views.TiposPokemonsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

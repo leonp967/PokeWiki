@@ -1,5 +1,12 @@
 <resources>
-    <string name="app_name">PokeWiki</string>
+    <string name="app_name">PokéWiki</string>
     <string name="title_activity_lista_tipos">Tipos de Pokémons</string>
     <string name="title_activity_lista_pokemons">Pokémons do tipo %s</string>
+    <string name="msg_erro">Erro</string>
+    <string name="erro_internet">Você não está conectado a internet, conecte-se e tente novamente.</string>
+    <string name="ok">OK</string>
+    <string name="menu_refresh">Atualizar</string>
+    <string name="erro_permissoes">Uma ou mais permissões não foram concedidas. Conceda nas opções do aparelho ou reinicie a aplicação.</string>
+    <string name="erro_nenhum_pokemon">Nenhum Pokémon deste tipo foi encontrado</string>
+    <string name="title_activity_pokemon">Detalhes do Pokémon %s</string>
 </resources>
