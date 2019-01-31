@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PokeWiki</string>
+    <string name="title_activity_lista_tipos">Tipos de Pokémons</string>
+    <string name="title_activity_lista_pokemons">Pokémons do tipo %s</string>
+</resources>
