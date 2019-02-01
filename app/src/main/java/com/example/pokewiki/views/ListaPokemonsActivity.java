@@ -22,6 +22,7 @@ import com.example.pokewiki.adapters.PokemonsAdapter;
 import com.example.pokewiki.models.PokemonHeader;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -39,6 +40,12 @@ public class ListaPokemonsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista);
+        inicializar();
+        Utils.verificarPermissoes(this);
+        verificarMontarListaPokemons();
+    }
+
+    private void inicializar() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             urlPokemons = extras.getString("URL");
@@ -55,12 +62,10 @@ public class ListaPokemonsActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            if(Utils.existeConexaoInternet(ListaPokemonsActivity.this))
-                montarListaPokemons();
-            else
-                swipeRefreshLayout.setRefreshing(false);
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::verificarMontarListaPokemons);
+    }
+
+    private void verificarMontarListaPokemons(){
         if(Utils.existeConexaoInternet(ListaPokemonsActivity.this))
             montarListaPokemons();
         else
@@ -74,7 +79,14 @@ public class ListaPokemonsActivity extends AppCompatActivity {
                 if(adapter != null){
                     ((PokemonsAdapter)adapter).clear();
                 }
-                List<PokemonHeader> tiposPokemons = Utils.processarPokemons(response);
+                List<PokemonHeader> tiposPokemons;
+                try {
+                    tiposPokemons = Utils.processarPokemons(response);
+                } catch(JSONException jsonExc){
+                    Dialogs.mostrarDialogErro(R.string.erro_rest, ListaPokemonsActivity.this);
+                    swipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 if(tiposPokemons.isEmpty()) {
                     findViewById(R.id.text_erro).setVisibility(View.VISIBLE);
                     findViewById(R.id.img_pokebola).setVisibility(View.VISIBLE);
@@ -95,6 +107,7 @@ public class ListaPokemonsActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Dialogs.mostrarDialogErro(R.string.erro_rest, ListaPokemonsActivity.this);
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -112,11 +125,7 @@ public class ListaPokemonsActivity extends AppCompatActivity {
 
             case R.id.menu_refresh:
                 swipeRefreshLayout.setRefreshing(true);
-                if(Utils.existeConexaoInternet(ListaPokemonsActivity.this))
-                    montarListaPokemons();
-                else
-                    swipeRefreshLayout.setRefreshing(false);
-
+                verificarMontarListaPokemons();
                 return true;
         }
 

@@ -20,6 +20,7 @@ import com.example.pokewiki.Utils;
 import com.example.pokewiki.adapters.TiposPokemonAdapter;
 import com.example.pokewiki.models.TipoPokemon;
 import com.example.pokewiki.models.TiposPokemonHeader;
+import com.google.gson.JsonParseException;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -39,6 +40,12 @@ public class TiposPokemonsActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista);
+        inicializar();
+        Utils.verificarPermissoes(this);
+        verificarMontarListaTipos();
+    }
+
+    private void inicializar(){
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.barra_superior_layout);
         TextView textView = getSupportActionBar().getCustomView().findViewById(R.id.nome_barra);
@@ -50,15 +57,10 @@ public class TiposPokemonsActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
         swipeRefreshLayout.setRefreshing(true);
-        swipeRefreshLayout.setOnRefreshListener(
-                () -> {
-                    if(Utils.existeConexaoInternet(TiposPokemonsActivity.this))
-                        montarListaTipos();
-                    else
-                        swipeRefreshLayout.setRefreshing(false);
-                }
-        );
-        Utils.verificarPermissoes(this);
+        swipeRefreshLayout.setOnRefreshListener(this::verificarMontarListaTipos);
+    }
+
+    private void verificarMontarListaTipos(){
         if(Utils.existeConexaoInternet(TiposPokemonsActivity.this))
             montarListaTipos();
         else
@@ -72,7 +74,14 @@ public class TiposPokemonsActivity extends AppCompatActivity {
                 if(adapter != null){
                     ((TiposPokemonAdapter)adapter).clear();
                 }
-                TiposPokemonHeader header = Utils.converterParaClasse(response.toString(), TiposPokemonHeader.class);
+                TiposPokemonHeader header;
+                try {
+                    header = Utils.converterParaClasse(response.toString(), TiposPokemonHeader.class);
+                } catch(JsonParseException jsonExc){
+                    Dialogs.mostrarDialogErro(R.string.erro_rest, TiposPokemonsActivity.this);
+                    swipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 List<TipoPokemon> tiposPokemons = header.getTiposPokemons();
                 if(adapter == null) {
                     adapter = new TiposPokemonAdapter(tiposPokemons, TiposPokemonsActivity.this);
@@ -88,6 +97,7 @@ public class TiposPokemonsActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Dialogs.mostrarDialogErro(R.string.erro_rest, TiposPokemonsActivity.this);
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -119,11 +129,7 @@ public class TiposPokemonsActivity extends AppCompatActivity {
 
             case R.id.menu_refresh:
                 swipeRefreshLayout.setRefreshing(true);
-                if(Utils.existeConexaoInternet(TiposPokemonsActivity.this))
-                    montarListaTipos();
-                else
-                    swipeRefreshLayout.setRefreshing(false);
-
+                verificarMontarListaTipos();
                 return true;
         }
 

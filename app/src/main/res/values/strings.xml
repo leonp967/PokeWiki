@@ -18,7 +18,7 @@
     <string name="text_movimentos_pokemon">Movimentos:</string>
     <string name="text_formas_pokemon">Formas:\n%s</string>
     <string name="text_tipos_pokemon">Tipos:\n%s</string>
-    <string name="erro_rest">Ocorreu um erro ao carregar os dados. Por favor tente novamente.</string>
+    <string name="erro_rest">Ocorreu um erro ao carregar os dados. Por favor, tente novamente.</string>
     <string name="menu_share">Compartilhar</string>
     <string name="text_share">Compartilhar dados do Pokémon</string>
     <string name="text_resumo_pokemon">Capturei um %s no app %s! Ele pesa %.1f kg, mede %d cm de altura, e uma de suas habilidades é a %s!</string>

@@ -19,6 +19,7 @@ import com.example.pokewiki.R;
 import com.example.pokewiki.RestController;
 import com.example.pokewiki.Utils;
 import com.example.pokewiki.models.Pokemon;
+import com.google.gson.JsonParseException;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -36,6 +37,12 @@ public class PokemonActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pokemon);
+        inicializar();
+        Utils.verificarPermissoes(this);
+        verificarPopularDadosPokemon();
+    }
+
+    private void inicializar(){
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             urlPokemon = extras.getString("URL");
@@ -44,8 +51,14 @@ public class PokemonActivity extends AppCompatActivity {
             TextView textView = getSupportActionBar().getCustomView().findViewById(R.id.nome_barra);
             textView.setText(getString(R.string.title_activity_pokemon));
         }
-        if(Utils.existeConexaoInternet(PokemonActivity.this))
+        ((TextView) findViewById(R.id.lista_movimentos)).setMovementMethod(new ScrollingMovementMethod());
+    }
+
+    private void verificarPopularDadosPokemon(){
+        if(Utils.existeConexaoInternet(PokemonActivity.this)) {
+            resetarInterface();
             popularDadosPokemon();
+        }
         else
             findViewById(R.id.progress_bar).setVisibility(View.GONE);
     }
@@ -54,54 +67,17 @@ public class PokemonActivity extends AppCompatActivity {
         RestController.get(urlPokemon, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                pokemon = Utils.converterJsonPokemon(response.toString());
-
-                String texto = getString(R.string.text_nome_pokemon, pokemon.getNome());
-                ((TextView) findViewById(R.id.text_nome)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = getString(R.string.text_altura_pokemon, pokemon.getAltura() * 10);
-                ((TextView) findViewById(R.id.text_altura)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = getString(R.string.text_peso_pokemon, pokemon.getPeso());
-                ((TextView) findViewById(R.id.text_peso)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = getString(R.string.text_especie_pokemon, pokemon.getEspecie());
-                ((TextView) findViewById(R.id.text_especie)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = getString(R.string.text_experiencia_pokemon, pokemon.getExperienciaBase());
-                ((TextView) findViewById(R.id.text_experiencia)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = Utils.getListaConcatenada(pokemon.getHabilidades());
-                texto = getString(R.string.text_habilidades_pokemon, texto);
-                ((TextView) findViewById(R.id.lista_habilidades)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = Utils.getListaConcatenada(pokemon.getMovimentos());
-                ((TextView) findViewById(R.id.lista_movimentos)).setText(texto);
-                ((TextView) findViewById(R.id.lista_movimentos)).setMovementMethod(new ScrollingMovementMethod());
-                findViewById(R.id.text_movimentos).setVisibility(View.VISIBLE);
-
-                texto = Utils.getListaConcatenada(pokemon.getFormas());
-                texto = getString(R.string.text_formas_pokemon, texto);
-                ((TextView) findViewById(R.id.lista_formas)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                texto = Utils.getListaConcatenada(pokemon.getTipos());
-                texto = getString(R.string.text_tipos_pokemon, texto);
-                ((TextView) findViewById(R.id.lista_tipos)).setText(Utils.getTextoNegritoIntervalo(texto));
-
-                if(pokemon.getImagemUrl() != null){
-                    RestController.get(pokemon.getImagemUrl(), new AsyncHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                            Bitmap imagem = BitmapFactory.decodeByteArray(response, 0, response.length);
-                            ((ImageView) findViewById(R.id.img_pokemon)).setImageBitmap(imagem);
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
-                            Dialogs.mostrarDialogErro(R.string.erro_rest, PokemonActivity.this);
-                        }
-                    });
+                try {
+                    pokemon = Utils.converterJsonPokemon(response.toString());
+                } catch(JsonParseException jsonExc){
+                    Dialogs.mostrarDialogErro(R.string.erro_rest, PokemonActivity.this);
+                    findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                    return;
                 }
+
+                preencherCampos();
+                if(pokemon.getImagemUrl() != null)
+                    carregarImagem();
 
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
             }
@@ -110,8 +86,58 @@ public class PokemonActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Dialogs.mostrarDialogErro(R.string.erro_rest, PokemonActivity.this);
+                findViewById(R.id.progress_bar).setVisibility(View.GONE);
             }
         });
+    }
+
+    private void carregarImagem() {
+        RestController.get(pokemon.getImagemUrl(), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                Bitmap imagem = BitmapFactory.decodeByteArray(response, 0, response.length);
+                ((ImageView) findViewById(R.id.img_pokemon)).setImageBitmap(imagem);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                Dialogs.mostrarDialogErro(R.string.erro_rest, PokemonActivity.this);
+                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void preencherCampos() {
+        String texto = getString(R.string.text_nome_pokemon, pokemon.getNome());
+        ((TextView) findViewById(R.id.text_nome)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = getString(R.string.text_altura_pokemon, pokemon.getAltura());
+        ((TextView) findViewById(R.id.text_altura)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = getString(R.string.text_peso_pokemon, pokemon.getPeso());
+        ((TextView) findViewById(R.id.text_peso)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = getString(R.string.text_especie_pokemon, pokemon.getEspecie());
+        ((TextView) findViewById(R.id.text_especie)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = getString(R.string.text_experiencia_pokemon, pokemon.getExperienciaBase());
+        ((TextView) findViewById(R.id.text_experiencia)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = Utils.getListaConcatenada(pokemon.getHabilidades());
+        texto = getString(R.string.text_habilidades_pokemon, texto);
+        ((TextView) findViewById(R.id.lista_habilidades)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = Utils.getListaConcatenada(pokemon.getMovimentos());
+        ((TextView) findViewById(R.id.lista_movimentos)).setText(texto);
+        findViewById(R.id.text_movimentos).setVisibility(View.VISIBLE);
+
+        texto = Utils.getListaConcatenada(pokemon.getFormas());
+        texto = getString(R.string.text_formas_pokemon, texto);
+        ((TextView) findViewById(R.id.lista_formas)).setText(Utils.getTextoNegritoIntervalo(texto));
+
+        texto = Utils.getListaConcatenada(pokemon.getTipos());
+        texto = getString(R.string.text_tipos_pokemon, texto);
+        ((TextView) findViewById(R.id.lista_tipos)).setText(Utils.getTextoNegritoIntervalo(texto));
     }
 
     private void resetarInterface() {
@@ -133,12 +159,7 @@ public class PokemonActivity extends AppCompatActivity {
 
             case R.id.menu_refresh:
                 findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
-                if(Utils.existeConexaoInternet(PokemonActivity.this)) {
-                    resetarInterface();
-                    popularDadosPokemon();
-                }
-                else
-                    findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                verificarPopularDadosPokemon();
                 break;
             case R.id.menu_share:
                 Intent sendIntent = new Intent();

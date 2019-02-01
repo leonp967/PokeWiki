@@ -77,28 +77,23 @@ public class Utils {
         return lista;
     }
 
-    public static <T> T converterParaClasse(String json, Class classe){
+    public static <T> T converterParaClasse(String json, Class classe) throws JsonParseException {
         return (T) gson.fromJson(json, classe);
     }
 
-    public static List<PokemonHeader> processarPokemons(JSONObject jsonResponse) {
+    public static List<PokemonHeader> processarPokemons(JSONObject jsonResponse) throws JSONException {
         List<PokemonHeader> pokemons = new ArrayList<>();
-        JSONArray array;
-        try {
-            array = jsonResponse.getJSONArray("pokemon");
-            for(int i = 0; i < array.length(); i++){
-                JSONObject objeto = array.getJSONObject(i);
-                PokemonHeader header = gson.fromJson(objeto.getJSONObject("pokemon").toString(), PokemonHeader.class);
-                pokemons.add(header);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        JSONArray array = jsonResponse.getJSONArray("pokemon");
+        for(int i = 0; i < array.length(); i++){
+            JSONObject objeto = array.getJSONObject(i);
+            PokemonHeader header = gson.fromJson(objeto.getJSONObject("pokemon").toString(), PokemonHeader.class);
+            pokemons.add(header);
         }
 
         return pokemons;
     }
 
-    public static Pokemon converterJsonPokemon(String json){
+    public static Pokemon converterJsonPokemon(String json) throws JsonParseException{
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Pokemon.class, new PokemonDeserializer());
         Gson gson = gsonBuilder.create();
@@ -126,7 +121,7 @@ public class Utils {
             JsonObject jobject = (JsonObject) json;
             Pokemon pokemon = gson.fromJson(jobject.toString(), Pokemon.class);
 
-            pokemon.setAltura(jobject.get("height").getAsInt());
+            pokemon.setAltura(jobject.get("height").getAsInt()*10);
             pokemon.setExperienciaBase(jobject.get("base_experience").getAsInt());
             pokemon.setNome(primeiroCharMaiusculo(jobject.get("name").getAsString()));
             pokemon.setPeso(jobject.get("weight").getAsInt()/10.f);
