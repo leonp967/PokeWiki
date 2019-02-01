@@ -14,6 +14,7 @@ import android.text.SpannableStringBuilder;
 import com.example.pokewiki.models.Estatistica;
 import com.example.pokewiki.models.Pokemon;
 import com.example.pokewiki.models.PokemonHeader;
+import com.example.pokewiki.models.TiposPokemonHeader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -77,8 +78,8 @@ public class Utils {
         return lista;
     }
 
-    public static <T> T converterParaClasse(String json, Class classe) throws JsonParseException {
-        return (T) gson.fromJson(json, classe);
+    public static TiposPokemonHeader converterParaTipoPokemonHeader(String json) throws JsonParseException {
+        return gson.fromJson(json, TiposPokemonHeader.class);
     }
 
     public static List<PokemonHeader> processarPokemons(JSONObject jsonResponse) throws JSONException {

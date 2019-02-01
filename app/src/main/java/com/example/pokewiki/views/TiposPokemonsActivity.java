@@ -76,7 +76,7 @@ public class TiposPokemonsActivity extends AppCompatActivity {
                 }
                 TiposPokemonHeader header;
                 try {
-                    header = Utils.converterParaClasse(response.toString(), TiposPokemonHeader.class);
+                    header = Utils.converterParaTipoPokemonHeader(response.toString());
                 } catch(JsonParseException jsonExc){
                     Dialogs.mostrarDialogErro(R.string.erro_rest, TiposPokemonsActivity.this);
                     swipeRefreshLayout.setRefreshing(false);
